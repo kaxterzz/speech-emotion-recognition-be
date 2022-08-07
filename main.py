@@ -8,7 +8,8 @@ from sql_app.database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 from typing import List
-from predict_from_model import predict_emotion
+from predict_from_total_model import predict_emotion
+# from predict_from_tess_model import predict_emotion
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -84,5 +85,5 @@ async def create_upload_file(file: UploadFile = File(...)):
     file_location = f"./uploads/audio_records/{file.filename}"
     with open(file_location, "wb+") as file_object:
         file_object.write(file.file.read())
-    predicted_emotion = predict_emotion()
+    predicted_emotion = predict_emotion(file.filename)
     return {"predicted_emotion": predicted_emotion,"info": f"file '{file.filename}' saved at '{file_location}'"}
