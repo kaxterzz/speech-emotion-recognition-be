@@ -2,3 +2,4 @@ venv
 data/*
 __pycache__
 uploads/audio_records/*
+uploads/emotion_name_audio_records/*

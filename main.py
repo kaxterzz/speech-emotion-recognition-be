@@ -10,6 +10,9 @@ from datetime import datetime, timedelta
 from typing import List
 from predict_from_total_model import predict_emotion
 # from predict_from_tess_model import predict_emotion
+from process_emotion_name_audio import process, mainp
+import moviepy.editor as moviepy
+import subprocess
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -36,11 +39,16 @@ async def root():
 #     finally:
 #         db.close()
 
+def convert_and_split(file_location,filename):
+    outputfile_name = filename[:-5]
+    print('outputfile_name',outputfile_name)
+    output_path = outputfile_name + ".wav"
+    command = ['ffmpeg', '-i', file_location, '-f', 'segment', '-segment_time', '15', 'out%09d.wav']
+    subprocess.run(command,stdout=subprocess.PIPE,stdin=subprocess.PIPE)
+    
 def get_db():
     with Session(engine) as db:
         yield db
-  
-
         
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -87,3 +95,19 @@ async def create_upload_file(file: UploadFile = File(...)):
         file_object.write(file.file.read())
     predicted_emotion = predict_emotion(file.filename)
     return {"predicted_emotion": predicted_emotion,"info": f"file '{file.filename}' saved at '{file_location}'"}
+
+@app.post("/upload-emotion-name-audio-records")
+async def create_upload_file(files: List[UploadFile]):
+    transcriptions = []
+    for file in files:
+        file_location = f"./uploads/emotion_name_audio_records/webm/{file.filename}"
+        with open(file_location, "ab") as file_object:
+            file_object.write(file.file.read())
+        # predicted_emotion = predict_emotion(file.filename)
+        convert_and_split(file_location,file.filename)
+        transcription = process("out000000000.wav")
+        fname = file.filename
+        info = {"filename": fname, "original_emotion": fname[19:-27], "transcription": transcription}
+        transcriptions.append(info)
+    print(transcriptions)
+    return {"data": transcriptions}

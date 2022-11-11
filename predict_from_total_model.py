@@ -308,6 +308,7 @@ def predict_emotion(file_name):
     
     # path = main()
     file_location = f"./uploads/audio_records/{file_name}"
+    print(file_location)
 
     res = get_features(file_location)
     scaler.fit_transform(res)

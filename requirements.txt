@@ -16,3 +16,9 @@ passlib[bcrypt]
 python-multipart
 plotly
 psycopg2
+transformers
+torch
+soundfile
+SpeechRecognition
+pydub
+MoviePy
