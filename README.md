@@ -50,7 +50,7 @@ This project implements a speech emotion recognition system using deep learning 
 
 5. **Start the API server**
    ```sh
-   uvicorn main:app --reload
+   fastapi dev main.py
    ```
 
 6. **API Usage**
